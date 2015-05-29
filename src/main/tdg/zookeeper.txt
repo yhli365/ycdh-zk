@@ -1,0 +1,42 @@
+Hadoop TDG3
+
+#)14.1 安装和运行ZooKeeper
+$ vi ~/.bashrc
+export ZK_HOME=/home/yhli/cdh/zk
+export PATH=$ZK_HOME/bin:...
+
+$ vi $ZK_HOME/conf/zoo.cfg
+$ zkServer.sh start
+$ zkServer.sh stop
+$ echo ruok | nc localhost 2181
+$ zkCli.sh
+$ zkCli.sh -server localhost:2181 ls /zoo
+
+$ export CLASSPATH=ycdh-zk-1.0.jar:$ZK_HOME/*:$ZK_HOME/lib/*:$ZK_HOME/conf
+
+#)14.2 示例：组成员管理应用
+:创建组
+$ java com.hadoopbook.zk.CreateGroup localhost zoo
+:加入组
+$ java com.hadoopbook.zk.JoinGroup localhost zoo m1
+:列出组成员
+$ java com.hadoopbook.zk.ListGroup localhost zoo
+$ java com.hadoopbook.zk.JoinGroup localhost zoo duck &
+$ java com.hadoopbook.zk.JoinGroup localhost zoo cow &
+$ java com.hadoopbook.zk.JoinGroup localhost zoo goat &
+$ goat_pid=$!
+$ java com.hadoopbook.zk.ListGroup localhost zoo
+$ kill $goat_pid
+$ zkCli.sh -server localhost:2181 ls /zoo
+:删除组
+$ java com.hadoopbook.zk.DeleteGroup localhost zoo
+$ java com.hadoopbook.zk.ListGroup localhost zoo
+
+#)14.4 使用ZooKeeper来构建应用
+:配置服务
+$ java com.hadoopbook.zk.ConfigUpdater localhost
+$ java com.hadoopbook.zk.ConfigWatcher localhost
+:可复原的ZooKeeper应用
+$ java com.hadoopbook.zk.ResilientConfigUpdater localhost
+$ java com.hadoopbook.zk.ConfigWatcher localhost
+
